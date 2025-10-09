@@ -1,0 +1,115 @@
+.auth-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.auth-card {
+  background: white;
+  padding: 2.5rem;
+  border-radius: 8px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+  width: 100%;
+  max-width: 400px;
+}
+
+.auth-card h1 {
+  text-align: center;
+  color: #667eea;
+  margin-bottom: 0.5rem;
+  font-size: 2rem;
+}
+
+.auth-card h2 {
+  text-align: center;
+  color: #333;
+  margin-bottom: 2rem;
+  font-size: 1.5rem;
+  font-weight: normal;
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: #555;
+  font-weight: 500;
+}
+
+.error-message {
+  background-color: #fee;
+  color: #c33;
+  padding: 0.75rem;
+  border-radius: 4px;
+  margin-bottom: 1rem;
+  border-left: 4px solid #c33;
+}
+
+.submit-btn {
+  width: 100%;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 0.75rem;
+  font-size: 1rem;
+  font-weight: 600;
+  margin-top: 1rem;
+}
+
+.submit-btn:hover {
+  opacity: 0.9;
+}
+
+.submit-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.auth-link {
+  text-align: center;
+  margin-top: 1.5rem;
+  color: #666;
+}
+
+.auth-link a {
+  color: #667eea;
+  font-weight: 600;
+}
+
+/* Password input with toggle button */
+.password-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.password-input-wrapper input {
+  padding-right: 3rem;
+}
+
+.password-toggle {
+  position: absolute;
+  right: 0.5rem;
+  background: transparent;
+  border: none;
+  padding: 0.25rem 0.5rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  color: #666;
+}
+
+.password-toggle:hover {
+  color: #333;
+}
+
+.password-toggle svg {
+  width: 20px;
+  height: 20px;
+}
