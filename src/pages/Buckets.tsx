@@ -6,6 +6,7 @@
 //   - Delete bucket
 //   - Shows image count and schedule count for each bucket
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { bucketsAPI } from '../services/api'
 import './Buckets.css'
@@ -24,6 +25,7 @@ interface Bucket {
 }
 
 function Buckets() {
+  const navigate = useNavigate()
   const [showCreateModal, setShowCreateModal] = useState(false)
   const [newBucketName, setNewBucketName] = useState('')
   const [newBucketDescription, setNewBucketDescription] = useState('')
@@ -143,7 +145,12 @@ function Buckets() {
               </div>
               
               <div className="bucket-footer">
-                <button className="view-btn">View Details →</button>
+                <button 
+                  className="view-btn"
+                  onClick={() => navigate(`/buckets/${bucket.id}/images`)}
+                >
+                  View Images →
+                </button>
               </div>
             </div>
           ))}
