@@ -1,13 +1,346 @@
-// Profile page - user settings and social media connections
-// Features: edit profile, watermark settings, connect social accounts
-function Profile() {
-  return (
-    <div>
-      <h1>⚙️ Profile & Settings</h1>
-      <p>Manage your profile and social media connections</p>
-      <p style={{ marginTop: '2rem', color: '#666' }}>Coming soon...</p>
-    </div>
-  )
+import { useState, useEffect } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import api from '../services/api';
+import { useAuthStore } from '../store/authStore';
+import './Profile.css';
+
+interface User {
+  id: number;
+  name: string;
+  email: string;
+  timezone: string;
+  watermark_opacity: number;
+  watermark_scale: number;
+  watermark_offset_x: number;
+  watermark_offset_y: number;
 }
 
-export default Profile
+interface ConnectedAccounts {
+  facebook_connected: boolean;
+  twitter_connected: boolean;
+  linkedin_connected: boolean;
+  google_connected: boolean;
+  instagram_connected: boolean;
+}
+
+export default function Profile() {
+  const queryClient = useQueryClient();
+  const authUser = useAuthStore((state) => state.user);
+  
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [timezone, setTimezone] = useState('');
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
+
+  // Fetch user info
+  const { data: userData, isLoading } = useQuery({
+    queryKey: ['user_info'],
+    queryFn: async () => {
+      const response = await api.get('/user_info');
+      return response.data;
+    },
+  });
+
+  // Update form when data loads
+  useEffect(() => {
+    if (userData?.user) {
+      setName(userData.user.name || '');
+      setEmail(userData.user.email || '');
+      setTimezone(userData.user.timezone || 'UTC');
+    }
+  }, [userData]);
+
+  // Update user mutation
+  const updateMutation = useMutation({
+    mutationFn: async (data: any) => {
+      return await api.patch('/user_info', data);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['user_info'] });
+      setSuccess('Profile updated successfully!');
+      setTimeout(() => setSuccess(''), 3000);
+    },
+    onError: (err: any) => {
+      setError(err.response?.data?.errors?.join(', ') || 'Failed to update profile');
+    },
+  });
+
+  // Disconnect mutations
+  const disconnectFacebookMutation = useMutation({
+    mutationFn: () => api.post('/user_info/disconnect_facebook'),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['user_info'] });
+      setSuccess('Facebook disconnected successfully!');
+      setTimeout(() => setSuccess(''), 3000);
+    },
+  });
+
+  const disconnectTwitterMutation = useMutation({
+    mutationFn: () => api.post('/user_info/disconnect_twitter'),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['user_info'] });
+      setSuccess('Twitter disconnected successfully!');
+      setTimeout(() => setSuccess(''), 3000);
+    },
+  });
+
+  const disconnectLinkedInMutation = useMutation({
+    mutationFn: () => api.post('/user_info/disconnect_linkedin'),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['user_info'] });
+      setSuccess('LinkedIn disconnected successfully!');
+      setTimeout(() => setSuccess(''), 3000);
+    },
+  });
+
+  const disconnectGoogleMutation = useMutation({
+    mutationFn: () => api.post('/user_info/disconnect_google'),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['user_info'] });
+      setSuccess('Google My Business disconnected successfully!');
+      setTimeout(() => setSuccess(''), 3000);
+    },
+  });
+
+  const handleUpdateProfile = (e: React.FormEvent) => {
+    e.preventDefault();
+    setError('');
+    
+    updateMutation.mutate({
+      name,
+      email,
+      timezone,
+    });
+  };
+
+  const handleConnectPlatform = (platform: string) => {
+    alert(`OAuth integration for ${platform} will be implemented. This requires setting up OAuth apps with each platform.`);
+  };
+
+  if (isLoading) {
+    return <div className="loading">Loading profile...</div>;
+  }
+
+  const user = userData?.user as User;
+  const connectedAccounts = userData?.connected_accounts as ConnectedAccounts;
+
+  return (
+    <div className="profile-page">
+      <h1>Profile Settings</h1>
+
+      {error && <div className="error-message">{error}</div>}
+      {success && <div className="success-message">{success}</div>}
+
+      {/* Account Information */}
+      <div className="profile-section">
+        <h2>Account Information</h2>
+        <form onSubmit={handleUpdateProfile}>
+          <div className="form-group">
+            <label htmlFor="name">Name</label>
+            <input
+              id="name"
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              required
+            />
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="email">Email</label>
+            <input
+              id="email"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="timezone">Timezone</label>
+            <select
+              id="timezone"
+              value={timezone}
+              onChange={(e) => setTimezone(e.target.value)}
+            >
+              <option value="UTC">UTC</option>
+              <option value="America/New_York">Eastern Time</option>
+              <option value="America/Chicago">Central Time</option>
+              <option value="America/Denver">Mountain Time</option>
+              <option value="America/Los_Angeles">Pacific Time</option>
+            </select>
+          </div>
+
+          <button type="submit" className="save-btn" disabled={updateMutation.isPending}>
+            {updateMutation.isPending ? 'Saving...' : 'Save Changes'}
+          </button>
+        </form>
+      </div>
+
+      {/* Connected Accounts */}
+      <div className="profile-section">
+        <h2>Connected Social Media Accounts</h2>
+        <p className="section-description">
+          Connect your social media accounts to enable automated posting.
+        </p>
+
+        <div className="accounts-grid">
+          {/* Facebook */}
+          <div className="account-card">
+            <div className="account-header">
+              <div className="account-icon facebook">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                </svg>
+              </div>
+              <div className="account-info">
+                <h3>Facebook</h3>
+                <span className={`status ${connectedAccounts?.facebook_connected ? 'connected' : 'disconnected'}`}>
+                  {connectedAccounts?.facebook_connected ? 'Connected' : 'Not Connected'}
+                </span>
+              </div>
+            </div>
+            {connectedAccounts?.facebook_connected ? (
+              <button
+                onClick={() => disconnectFacebookMutation.mutate()}
+                className="disconnect-btn"
+                disabled={disconnectFacebookMutation.isPending}
+              >
+                Disconnect
+              </button>
+            ) : (
+              <button
+                onClick={() => handleConnectPlatform('Facebook')}
+                className="connect-btn"
+              >
+                Connect Facebook
+              </button>
+            )}
+          </div>
+
+          {/* Twitter */}
+          <div className="account-card">
+            <div className="account-header">
+              <div className="account-icon twitter">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/>
+                </svg>
+              </div>
+              <div className="account-info">
+                <h3>Twitter</h3>
+                <span className={`status ${connectedAccounts?.twitter_connected ? 'connected' : 'disconnected'}`}>
+                  {connectedAccounts?.twitter_connected ? 'Connected' : 'Not Connected'}
+                </span>
+              </div>
+            </div>
+            {connectedAccounts?.twitter_connected ? (
+              <button
+                onClick={() => disconnectTwitterMutation.mutate()}
+                className="disconnect-btn"
+                disabled={disconnectTwitterMutation.isPending}
+              >
+                Disconnect
+              </button>
+            ) : (
+              <button
+                onClick={() => handleConnectPlatform('Twitter')}
+                className="connect-btn"
+              >
+                Connect Twitter
+              </button>
+            )}
+          </div>
+
+          {/* LinkedIn */}
+          <div className="account-card">
+            <div className="account-header">
+              <div className="account-icon linkedin">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+                </svg>
+              </div>
+              <div className="account-info">
+                <h3>LinkedIn</h3>
+                <span className={`status ${connectedAccounts?.linkedin_connected ? 'connected' : 'disconnected'}`}>
+                  {connectedAccounts?.linkedin_connected ? 'Connected' : 'Not Connected'}
+                </span>
+              </div>
+            </div>
+            {connectedAccounts?.linkedin_connected ? (
+              <button
+                onClick={() => disconnectLinkedInMutation.mutate()}
+                className="disconnect-btn"
+                disabled={disconnectLinkedInMutation.isPending}
+              >
+                Disconnect
+              </button>
+            ) : (
+              <button
+                onClick={() => handleConnectPlatform('LinkedIn')}
+                className="connect-btn"
+              >
+                Connect LinkedIn
+              </button>
+            )}
+          </div>
+
+          {/* Google My Business */}
+          <div className="account-card">
+            <div className="account-header">
+              <div className="account-icon google">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+                  <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+                  <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+                  <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+                </svg>
+              </div>
+              <div className="account-info">
+                <h3>Google My Business</h3>
+                <span className={`status ${connectedAccounts?.google_connected ? 'connected' : 'disconnected'}`}>
+                  {connectedAccounts?.google_connected ? 'Connected' : 'Not Connected'}
+                </span>
+              </div>
+            </div>
+            {connectedAccounts?.google_connected ? (
+              <button
+                onClick={() => disconnectGoogleMutation.mutate()}
+                className="disconnect-btn"
+                disabled={disconnectGoogleMutation.isPending}
+              >
+                Disconnect
+              </button>
+            ) : (
+              <button
+                onClick={() => handleConnectPlatform('Google My Business')}
+                className="connect-btn"
+              >
+                Connect Google
+              </button>
+            )}
+          </div>
+
+          {/* Instagram */}
+          <div className="account-card">
+            <div className="account-header">
+              <div className="account-icon instagram">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+                </svg>
+              </div>
+              <div className="account-info">
+                <h3>Instagram</h3>
+                <span className={`status ${connectedAccounts?.instagram_connected ? 'connected' : 'disconnected'}`}>
+                  {connectedAccounts?.instagram_connected ? 'Connected' : 'Not Connected'}
+                </span>
+              </div>
+            </div>
+            <p className="account-note">Connected via Facebook</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
