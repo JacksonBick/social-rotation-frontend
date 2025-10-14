@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import api from '../services/api';
+import ImageEditor from '../components/ImageEditor';
 import './BucketImages.css';
 
 interface Image {
@@ -44,6 +45,8 @@ export default function BucketImages() {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [editingImageUrl, setEditingImageUrl] = useState<string | null>(null);
+  const [editingImageId, setEditingImageId] = useState<number | null>(null);
 
   useEffect(() => {
     fetchBucketAndImages();
@@ -160,6 +163,45 @@ export default function BucketImages() {
     setError('');
   };
 
+  const handleEditImage = (bucketImage: BucketImage) => {
+    const imageUrl = `http://localhost:3000/${bucketImage.image.file_path}`;
+    setEditingImageUrl(imageUrl);
+    setEditingImageId(bucketImage.id);
+  };
+
+  const handleSaveEditedImage = async (editedImageBlob: Blob) => {
+    if (!editingImageId) return;
+
+    try {
+      const formData = new FormData();
+      formData.append('file', editedImageBlob, 'edited-image.jpg');
+
+      // Upload the edited image as a new version
+      await api.patch(
+        `/buckets/${bucketId}/images/${editingImageId}`,
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        }
+      );
+
+      setSuccess('Image edited successfully!');
+      setEditingImageUrl(null);
+      setEditingImageId(null);
+      
+      // Refresh the images list
+      await fetchBucketAndImages();
+      
+      // Clear success message after 3 seconds
+      setTimeout(() => setSuccess(''), 3000);
+    } catch (err: any) {
+      console.error('Error saving edited image:', err);
+      throw err; // Let the editor handle the error
+    }
+  };
+
   if (loading) {
     return (
       <div className="bucket-images-page">
@@ -261,18 +303,38 @@ export default function BucketImages() {
                   {bucketImage.description && (
                     <p className="image-description">{bucketImage.description}</p>
                   )}
-                  <button
-                    onClick={() => handleDelete(bucketImage.id)}
-                    className="btn-delete"
-                  >
-                    Delete
-                  </button>
+                  <div className="image-actions">
+                    <button
+                      onClick={() => handleEditImage(bucketImage)}
+                      className="btn-edit"
+                    >
+                      ✂️ Edit
+                    </button>
+                    <button
+                      onClick={() => handleDelete(bucketImage.id)}
+                      className="btn-delete"
+                    >
+                      🗑️ Delete
+                    </button>
+                  </div>
                 </div>
               </div>
             ))}
           </div>
         )}
       </div>
+
+      {/* Image Editor Modal */}
+      {editingImageUrl && (
+        <ImageEditor
+          imageUrl={editingImageUrl}
+          onSave={handleSaveEditedImage}
+          onClose={() => {
+            setEditingImageUrl(null);
+            setEditingImageId(null);
+          }}
+        />
+      )}
     </div>
   );
 }
