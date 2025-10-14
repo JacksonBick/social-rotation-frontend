@@ -114,9 +114,89 @@ export default function Profile() {
     });
   };
 
-  const handleConnectPlatform = (platform: string) => {
-    alert(`OAuth integration for ${platform} will be implemented. This requires setting up OAuth apps with each platform.`);
+  const handleConnectPlatform = async (platform: string) => {
+    try {
+      let response;
+      
+      switch (platform) {
+        case 'Facebook':
+          response = await api.get('/oauth/facebook/login');
+          break;
+        case 'LinkedIn':
+          response = await api.get('/oauth/linkedin/login');
+          break;
+        case 'Google My Business':
+          response = await api.get('/oauth/google/login');
+          break;
+        case 'Twitter':
+          alert('Twitter OAuth requires additional setup. Please contact support.');
+          return;
+        default:
+          return;
+      }
+      
+      if (response.data.oauth_url) {
+        // Open OAuth URL in popup window
+        const width = 600;
+        const height = 700;
+        const left = (window.screen.width - width) / 2;
+        const top = (window.screen.height - height) / 2;
+        
+        window.open(
+          response.data.oauth_url,
+          'OAuth',
+          `width=${width},height=${height},left=${left},top=${top}`
+        );
+        
+        // Listen for OAuth completion
+        window.addEventListener('message', (event) => {
+          if (event.data.type === 'oauth_success') {
+            queryClient.invalidateQueries({ queryKey: ['user_info'] });
+            setSuccess(`${platform} connected successfully!`);
+            setTimeout(() => setSuccess(''), 3000);
+          }
+        });
+      }
+    } catch (err: any) {
+      console.error(`Error connecting ${platform}:`, err);
+      setError(`Failed to connect ${platform}`);
+    }
   };
+  
+  // Check for OAuth success/error in URL params
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const success = params.get('success');
+    const error = params.get('error');
+    
+    if (success) {
+      const messages: Record<string, string> = {
+        facebook_connected: 'Facebook connected successfully!',
+        linkedin_connected: 'LinkedIn connected successfully!',
+        google_connected: 'Google My Business connected successfully!',
+      };
+      setSuccess(messages[success] || 'Account connected successfully!');
+      setTimeout(() => setSuccess(''), 3000);
+      
+      // Clean up URL
+      window.history.replaceState({}, '', '/profile');
+      queryClient.invalidateQueries({ queryKey: ['user_info'] });
+    }
+    
+    if (error) {
+      const messages: Record<string, string> = {
+        invalid_state: 'OAuth validation failed. Please try again.',
+        user_not_found: 'User session expired. Please login again.',
+        facebook_auth_failed: 'Facebook authentication failed.',
+        linkedin_auth_failed: 'LinkedIn authentication failed.',
+        google_auth_failed: 'Google authentication failed.',
+      };
+      setError(messages[error] || 'Authentication failed. Please try again.');
+      
+      // Clean up URL
+      window.history.replaceState({}, '', '/profile');
+    }
+  }, [queryClient]);
 
   if (isLoading) {
     return <div className="loading">Loading profile...</div>;
