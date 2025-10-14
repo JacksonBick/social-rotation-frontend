@@ -71,6 +71,11 @@
   border-bottom: 1px solid #f0f0f0;
 }
 
+.schedule-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
 .schedule-type-badge {
   padding: 0.4rem 0.8rem;
   border-radius: 6px;
@@ -94,14 +99,31 @@
   color: #f57c00;
 }
 
+.post-now-btn,
 .delete-btn {
   background: none;
   border: none;
-  color: #dc3545;
   cursor: pointer;
   padding: 0.5rem;
   border-radius: 4px;
   transition: all 0.2s;
+}
+
+.post-now-btn {
+  color: #28a745;
+}
+
+.post-now-btn:hover:not(:disabled) {
+  background: #e8f5e9;
+}
+
+.post-now-btn:disabled {
+  color: #ccc;
+  cursor: not-allowed;
+}
+
+.delete-btn {
+  color: #dc3545;
 }
 
 .delete-btn:hover {

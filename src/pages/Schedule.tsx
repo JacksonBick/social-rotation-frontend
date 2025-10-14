@@ -99,6 +99,18 @@ export default function Schedule() {
     },
   });
 
+  // Post now mutation
+  const postNowMutation = useMutation({
+    mutationFn: (id: number) => api.post(`/scheduler/post_now/${id}`),
+    onSuccess: (response) => {
+      queryClient.invalidateQueries({ queryKey: ['bucket_schedules'] });
+      alert(`Post sent successfully!\n\nResults:\n${JSON.stringify(response.data.results, null, 2)}`);
+    },
+    onError: (err: any) => {
+      alert(`Failed to post: ${err.response?.data?.details || err.response?.data?.error || 'Unknown error'}`);
+    },
+  });
+
   const resetForm = () => {
     setSelectedBucket(null);
     setScheduleType(SCHEDULE_TYPE_ROTATION);
@@ -175,6 +187,12 @@ export default function Schedule() {
     }
   };
 
+  const handlePostNow = (id: number) => {
+    if (window.confirm('Post this content now to all selected social media platforms?')) {
+      postNowMutation.mutate(id);
+    }
+  };
+
   const getScheduleTypeName = (type: number) => {
     switch (type) {
       case SCHEDULE_TYPE_ROTATION:
@@ -231,16 +249,29 @@ export default function Schedule() {
                 <div className="schedule-type-badge" data-type={schedule.schedule_type}>
                   {getScheduleTypeName(schedule.schedule_type)}
                 </div>
-                <button
-                  onClick={() => handleDelete(schedule.id)}
-                  className="delete-btn"
-                  title="Delete schedule"
-                >
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <polyline points="3 6 5 6 21 6"></polyline>
-                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                  </svg>
-                </button>
+                <div className="schedule-actions">
+                  <button
+                    onClick={() => handlePostNow(schedule.id)}
+                    className="post-now-btn"
+                    title="Post now"
+                    disabled={postNowMutation.isPending}
+                  >
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <circle cx="12" cy="12" r="10"></circle>
+                      <polyline points="12 6 12 12 16 14"></polyline>
+                    </svg>
+                  </button>
+                  <button
+                    onClick={() => handleDelete(schedule.id)}
+                    className="delete-btn"
+                    title="Delete schedule"
+                  >
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <polyline points="3 6 5 6 21 6"></polyline>
+                      <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                    </svg>
+                  </button>
+                </div>
               </div>
               
               <div className="schedule-info">
