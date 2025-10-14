@@ -5,15 +5,19 @@ import './ImageEditor.css';
 
 interface ImageEditorProps {
   imageUrl: string;
-  onSave: (editedImageBlob: Blob) => Promise<void>;
+  imageName: string;
+  onSave: (editedImageBlob: Blob, newName: string) => Promise<void>;
   onClose: () => void;
 }
 
-export default function ImageEditor({ imageUrl, onSave, onClose }: ImageEditorProps) {
+export default function ImageEditor({ imageUrl, imageName, onSave, onClose }: ImageEditorProps) {
   const [crop, setCrop] = useState<Point>({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
   const [rotation, setRotation] = useState(0);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null);
+  
+  // Image name
+  const [name, setName] = useState(imageName);
   
   // Filter states
   const [brightness, setBrightness] = useState(100);
@@ -108,6 +112,11 @@ export default function ImageEditor({ imageUrl, onSave, onClose }: ImageEditorPr
       return;
     }
 
+    if (!name.trim()) {
+      setError('Please enter an image name');
+      return;
+    }
+
     try {
       setSaving(true);
       setError('');
@@ -118,7 +127,7 @@ export default function ImageEditor({ imageUrl, onSave, onClose }: ImageEditorPr
         rotation
       );
 
-      await onSave(croppedImage);
+      await onSave(croppedImage, name.trim());
       onClose();
     } catch (err) {
       console.error('Error saving edited image:', err);
@@ -216,6 +225,20 @@ export default function ImageEditor({ imageUrl, onSave, onClose }: ImageEditorPr
 
           {/* Controls */}
           <div className="controls-panel">
+            {/* Image Name */}
+            <div className="control-section">
+              <h3>Image Name</h3>
+              <div className="control-group">
+                <input
+                  type="text"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder="Enter image name"
+                  className="name-input"
+                />
+              </div>
+            </div>
+
             {/* Crop Controls */}
             <div className="control-section">
               <h3>Crop & Transform</h3>

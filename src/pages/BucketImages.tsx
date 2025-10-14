@@ -47,6 +47,7 @@ export default function BucketImages() {
   const [success, setSuccess] = useState('');
   const [editingImageUrl, setEditingImageUrl] = useState<string | null>(null);
   const [editingImageId, setEditingImageId] = useState<number | null>(null);
+  const [editingImageName, setEditingImageName] = useState<string>('');
 
   useEffect(() => {
     fetchBucketAndImages();
@@ -167,16 +168,18 @@ export default function BucketImages() {
     const imageUrl = `http://localhost:3000/${bucketImage.image.file_path}`;
     setEditingImageUrl(imageUrl);
     setEditingImageId(bucketImage.id);
+    setEditingImageName(bucketImage.friendly_name);
   };
 
-  const handleSaveEditedImage = async (editedImageBlob: Blob) => {
+  const handleSaveEditedImage = async (editedImageBlob: Blob, newName: string) => {
     if (!editingImageId) return;
 
     try {
       const formData = new FormData();
       formData.append('file', editedImageBlob, 'edited-image.jpg');
+      formData.append('bucket_image[friendly_name]', newName);
 
-      // Upload the edited image as a new version
+      // Upload the edited image as a new version with new name
       await api.patch(
         `/buckets/${bucketId}/images/${editingImageId}`,
         formData,
@@ -190,6 +193,7 @@ export default function BucketImages() {
       setSuccess('Image edited successfully!');
       setEditingImageUrl(null);
       setEditingImageId(null);
+      setEditingImageName('');
       
       // Refresh the images list
       await fetchBucketAndImages();
@@ -336,10 +340,12 @@ export default function BucketImages() {
       {editingImageUrl && (
         <ImageEditor
           imageUrl={editingImageUrl}
+          imageName={editingImageName}
           onSave={handleSaveEditedImage}
           onClose={() => {
             setEditingImageUrl(null);
             setEditingImageId(null);
+            setEditingImageName('');
           }}
         />
       )}
