@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import api from '../services/api';
+import ImageEditorModal from '../components/ImageEditorModal';
 import './BucketImages.css';
 
 interface Image {
@@ -44,6 +45,7 @@ export default function BucketImages() {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [editingImage, setEditingImage] = useState<BucketImage | null>(null);
 
   useEffect(() => {
     fetchBucketAndImages();
@@ -160,6 +162,32 @@ export default function BucketImages() {
     setError('');
   };
 
+  const handleEdit = (bucketImage: BucketImage) => {
+    setEditingImage(bucketImage);
+  };
+
+  const handleSaveEdit = async (updatedData: any) => {
+    if (!editingImage) return;
+
+    try {
+      await api.patch(
+        `/buckets/${bucketId}/images/${editingImage.id}`,
+        { bucket_image: updatedData }
+      );
+      
+      setSuccess('Image updated successfully!');
+      setEditingImage(null);
+      
+      // Refresh the images list
+      await fetchBucketAndImages();
+      
+      // Clear success message after 3 seconds
+      setTimeout(() => setSuccess(''), 3000);
+    } catch (err: any) {
+      throw err; // Let the modal handle the error
+    }
+  };
+
   if (loading) {
     return (
       <div className="bucket-images-page">
@@ -261,18 +289,36 @@ export default function BucketImages() {
                   {bucketImage.description && (
                     <p className="image-description">{bucketImage.description}</p>
                   )}
-                  <button
-                    onClick={() => handleDelete(bucketImage.id)}
-                    className="btn-delete"
-                  >
-                    Delete
-                  </button>
+                  <div className="image-actions">
+                    <button
+                      onClick={() => handleEdit(bucketImage)}
+                      className="btn-edit"
+                    >
+                      ✏️ Edit
+                    </button>
+                    <button
+                      onClick={() => handleDelete(bucketImage.id)}
+                      className="btn-delete"
+                    >
+                      🗑️ Delete
+                    </button>
+                  </div>
                 </div>
               </div>
             ))}
           </div>
         )}
       </div>
+
+      {/* Image Editor Modal */}
+      {editingImage && (
+        <ImageEditorModal
+          bucketImage={editingImage}
+          bucketId={Number(bucketId)}
+          onClose={() => setEditingImage(null)}
+          onSave={handleSaveEdit}
+        />
+      )}
     </div>
   );
 }
