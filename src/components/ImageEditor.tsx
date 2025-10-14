@@ -170,8 +170,18 @@ export default function ImageEditor({ imageUrl, onSave, onClose }: ImageEditorPr
     <div className="modal-overlay" onClick={onClose}>
       <div className="image-editor-modal" onClick={(e) => e.stopPropagation()}>
         <div className="editor-header">
-          <h2>✂️ Edit Image</h2>
-          <button onClick={onClose} className="close-btn">✕</button>
+          <h2>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"/>
+            </svg>
+            Edit Image
+          </h2>
+          <button onClick={onClose} className="close-btn">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
         </div>
 
         {error && <div className="error-message">{error}</div>}
@@ -208,7 +218,7 @@ export default function ImageEditor({ imageUrl, onSave, onClose }: ImageEditorPr
           <div className="controls-panel">
             {/* Crop Controls */}
             <div className="control-section">
-              <h3>🔍 Crop & Transform</h3>
+              <h3>Crop & Transform</h3>
               <div className="control-group">
                 <label>Zoom: {zoom.toFixed(1)}x</label>
                 <input
@@ -235,7 +245,7 @@ export default function ImageEditor({ imageUrl, onSave, onClose }: ImageEditorPr
 
             {/* Filter Presets */}
             <div className="control-section">
-              <h3>🎨 Presets</h3>
+              <h3>Presets</h3>
               <div className="preset-buttons">
                 <button onClick={() => applyPreset('vivid')} className="preset-btn">Vivid</button>
                 <button onClick={() => applyPreset('bw')} className="preset-btn">B&W</button>
@@ -248,7 +258,7 @@ export default function ImageEditor({ imageUrl, onSave, onClose }: ImageEditorPr
 
             {/* Manual Filters */}
             <div className="control-section">
-              <h3>🎛️ Adjust</h3>
+              <h3>Adjust</h3>
               <div className="control-group">
                 <label>Brightness: {brightness}%</label>
                 <input
@@ -298,7 +308,12 @@ export default function ImageEditor({ imageUrl, onSave, onClose }: ImageEditorPr
             Cancel
           </button>
           <button onClick={handleSave} className="btn-save" disabled={saving}>
-            {saving ? 'Saving...' : '💾 Save Edited Image'}
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+              <polyline points="17 21 17 13 7 13 7 21"></polyline>
+              <polyline points="7 3 7 8 15 8"></polyline>
+            </svg>
+            {saving ? 'Saving...' : 'Save Edited Image'}
           </button>
         </div>
       </div>
