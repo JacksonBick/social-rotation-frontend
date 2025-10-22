@@ -150,11 +150,19 @@ form {
 }
 
 .account-icon.twitter {
-  background: #1da1f2;
+  background: #000000;
 }
 
 .account-icon.linkedin {
   background: #0a66c2;
+}
+
+.account-icon.tiktok {
+  background: #000000;
+}
+
+.account-icon.youtube {
+  background: #FF0000;
 }
 
 .account-icon.google {

@@ -17,6 +17,8 @@ import Buckets from './pages/Buckets'
 import BucketImages from './pages/BucketImages'
 import Schedule from './pages/Schedule'
 import Profile from './pages/Profile'
+import SubAccounts from './pages/SubAccounts'
+import RssFeeds from './pages/RssFeeds'
 
 // Protected Route wrapper - redirects to login if not authenticated
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
@@ -49,6 +51,8 @@ function App() {
         <Route path="buckets" element={<Buckets />} />
         <Route path="buckets/:bucketId/images" element={<BucketImages />} />
         <Route path="schedule" element={<Schedule />} />
+        <Route path="sub-accounts" element={<SubAccounts />} />
+        <Route path="rss-feeds" element={<RssFeeds />} />
         <Route path="profile" element={<Profile />} />
       </Route>
       

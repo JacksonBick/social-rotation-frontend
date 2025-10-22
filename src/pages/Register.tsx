@@ -12,6 +12,8 @@ function Register() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [passwordConfirmation, setPasswordConfirmation] = useState('')
+  const [accountType, setAccountType] = useState('personal') // 'personal' or 'agency'
+  const [companyName, setCompanyName] = useState('')
   const [showPassword, setShowPassword] = useState(false)
   const [showPasswordConfirmation, setShowPasswordConfirmation] = useState(false)
   const [error, setError] = useState('')
@@ -32,7 +34,7 @@ function Register() {
     setLoading(true)
 
     try {
-      const response = await authAPI.register(name, email, password)
+      const response = await authAPI.register(name, email, password, accountType, companyName)
       const { user, token } = response.data
       
       login(user, token)
@@ -54,7 +56,39 @@ function Register() {
         
         <form onSubmit={handleSubmit}>
           <div className="form-group">
-            <label htmlFor="name">Name</label>
+            <label htmlFor="accountType">Account Type</label>
+            <select
+              id="accountType"
+              value={accountType}
+              onChange={(e) => setAccountType(e.target.value)}
+              required
+            >
+              <option value="personal">Personal Account</option>
+              <option value="agency">Agency/Reseller Account</option>
+            </select>
+            <small style={{color: '#666', fontSize: '0.85rem', marginTop: '0.25rem', display: 'block'}}>
+              {accountType === 'agency' 
+                ? 'Manage multiple client accounts and create private marketplace items' 
+                : 'Single user account for personal use'}
+            </small>
+          </div>
+
+          {accountType === 'agency' && (
+            <div className="form-group">
+              <label htmlFor="companyName">Company/Agency Name</label>
+              <input
+                id="companyName"
+                type="text"
+                value={companyName}
+                onChange={(e) => setCompanyName(e.target.value)}
+                required
+                placeholder="Your Agency Name"
+              />
+            </div>
+          )}
+          
+          <div className="form-group">
+            <label htmlFor="name">Your Name</label>
             <input
               id="name"
               type="text"

@@ -209,7 +209,7 @@ export default function Schedule() {
   const getPlatformNames = (postTo: number) => {
     const platforms = [];
     if (postTo & PLATFORMS.FACEBOOK) platforms.push('Facebook');
-    if (postTo & PLATFORMS.TWITTER) platforms.push('Twitter');
+    if (postTo & PLATFORMS.TWITTER) platforms.push('X');
     if (postTo & PLATFORMS.INSTAGRAM) platforms.push('Instagram');
     if (postTo & PLATFORMS.LINKEDIN) platforms.push('LinkedIn');
     if (postTo & PLATFORMS.GMB) platforms.push('GMB');
@@ -371,7 +371,7 @@ export default function Schedule() {
                   </label>
                   <label className="checkbox-label">
                     <input type="checkbox" checked={twitter} onChange={(e) => setTwitter(e.target.checked)} />
-                    <span>Twitter</span>
+                    <span>X</span>
                   </label>
                   <label className="checkbox-label">
                     <input type="checkbox" checked={instagram} onChange={(e) => setInstagram(e.target.checked)} />
@@ -404,12 +404,12 @@ export default function Schedule() {
               </div>
 
               <div className="form-group">
-                <label htmlFor="twitterDescription">Twitter Description (optional)</label>
+                <label htmlFor="twitterDescription">X Description (optional)</label>
                 <textarea
                   id="twitterDescription"
                   value={twitterDescription}
                   onChange={(e) => setTwitterDescription(e.target.value)}
-                  placeholder="Twitter-specific description (280 characters max)"
+                  placeholder="X-specific description (280 characters max)"
                   rows={2}
                   maxLength={280}
                 />

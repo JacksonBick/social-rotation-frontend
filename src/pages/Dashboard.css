@@ -24,8 +24,20 @@
   transition: all 0.3s;
 }
 
+.stat-card-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.stat-card-header svg {
+  color: #667eea;
+  flex-shrink: 0;
+}
+
 .stat-card h3 {
-  margin: 0 0 1rem 0;
+  margin: 0;
   font-size: 1.25rem;
   color: #333;
 }

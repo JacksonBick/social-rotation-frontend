@@ -44,8 +44,8 @@ export const authAPI = {
     api.post('/auth/login', { email, password }),
   
   // POST /api/v1/auth/register
-  register: (name: string, email: string, password: string) =>
-    api.post('/auth/register', { name, email, password }),
+  register: (name: string, email: string, password: string, accountType?: string, companyName?: string) =>
+    api.post('/auth/register', { name, email, password, account_type: accountType, company_name: companyName }),
 }
 
 // BUCKET ENDPOINTS

@@ -21,6 +21,8 @@ interface ConnectedAccounts {
   linkedin_connected: boolean;
   google_connected: boolean;
   instagram_connected: boolean;
+  tiktok_connected: boolean;
+  youtube_connected: boolean;
 }
 
 export default function Profile() {
@@ -76,11 +78,11 @@ export default function Profile() {
     },
   });
 
-  const disconnectTwitterMutation = useMutation({
+  const disconnectXMutation = useMutation({
     mutationFn: () => api.post('/user_info/disconnect_twitter'),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['user_info'] });
-      setSuccess('Twitter disconnected successfully!');
+      setSuccess('X disconnected successfully!');
       setTimeout(() => setSuccess(''), 3000);
     },
   });
@@ -99,6 +101,24 @@ export default function Profile() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['user_info'] });
       setSuccess('Google My Business disconnected successfully!');
+      setTimeout(() => setSuccess(''), 3000);
+    },
+  });
+
+  const disconnectTikTokMutation = useMutation({
+    mutationFn: () => api.post('/user_info/disconnect_tiktok'),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['user_info'] });
+      setSuccess('TikTok disconnected successfully!');
+      setTimeout(() => setSuccess(''), 3000);
+    },
+  });
+
+  const disconnectYouTubeMutation = useMutation({
+    mutationFn: () => api.post('/user_info/disconnect_youtube'),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['user_info'] });
+      setSuccess('YouTube disconnected successfully!');
       setTimeout(() => setSuccess(''), 3000);
     },
   });
@@ -128,9 +148,15 @@ export default function Profile() {
         case 'Google My Business':
           response = await api.get('/oauth/google/login');
           break;
-        case 'Twitter':
-          alert('Twitter OAuth requires additional setup. Please contact support.');
-          return;
+        case 'X':
+          response = await api.get('/oauth/twitter/login');
+          break;
+        case 'TikTok':
+          response = await api.get('/oauth/tiktok/login');
+          break;
+        case 'YouTube':
+          response = await api.get('/oauth/youtube/login');
+          break;
         default:
           return;
       }
@@ -300,16 +326,16 @@ export default function Profile() {
             )}
           </div>
 
-          {/* Twitter */}
+          {/* X (Twitter) */}
           <div className="account-card">
             <div className="account-header">
               <div className="account-icon twitter">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/>
+                  <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
                 </svg>
               </div>
               <div className="account-info">
-                <h3>Twitter</h3>
+                <h3>X (Twitter)</h3>
                 <span className={`status ${connectedAccounts?.twitter_connected ? 'connected' : 'disconnected'}`}>
                   {connectedAccounts?.twitter_connected ? 'Connected' : 'Not Connected'}
                 </span>
@@ -317,18 +343,18 @@ export default function Profile() {
             </div>
             {connectedAccounts?.twitter_connected ? (
               <button
-                onClick={() => disconnectTwitterMutation.mutate()}
+                onClick={() => disconnectXMutation.mutate()}
                 className="disconnect-btn"
-                disabled={disconnectTwitterMutation.isPending}
+                disabled={disconnectXMutation.isPending}
               >
                 Disconnect
               </button>
             ) : (
               <button
-                onClick={() => handleConnectPlatform('Twitter')}
+                onClick={() => handleConnectPlatform('X')}
                 className="connect-btn"
               >
-                Connect Twitter
+                Connect X
               </button>
             )}
           </div>
@@ -418,6 +444,72 @@ export default function Profile() {
               </div>
             </div>
             <p className="account-note">Connected via Facebook</p>
+          </div>
+
+          {/* TikTok */}
+          <div className="account-card">
+            <div className="account-header">
+              <div className="account-icon tiktok">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-5.2 1.74 2.89 2.89 0 012.31-4.64 2.93 2.93 0 01.88.13V9.4a6.84 6.84 0 00-1-.05A6.33 6.33 0 005 20.1a6.34 6.34 0 0010.86-4.43v-7a8.16 8.16 0 004.77 1.52v-3.4a4.85 4.85 0 01-1-.1z"/>
+                </svg>
+              </div>
+              <div className="account-info">
+                <h3>TikTok</h3>
+                <span className={`status ${connectedAccounts?.tiktok_connected ? 'connected' : 'disconnected'}`}>
+                  {connectedAccounts?.tiktok_connected ? 'Connected' : 'Not Connected'}
+                </span>
+              </div>
+            </div>
+            {connectedAccounts?.tiktok_connected ? (
+              <button
+                onClick={() => disconnectTikTokMutation.mutate()}
+                className="disconnect-btn"
+                disabled={disconnectTikTokMutation.isPending}
+              >
+                Disconnect
+              </button>
+            ) : (
+              <button
+                onClick={() => handleConnectPlatform('TikTok')}
+                className="connect-btn"
+              >
+                Connect TikTok
+              </button>
+            )}
+          </div>
+
+          {/* YouTube */}
+          <div className="account-card">
+            <div className="account-header">
+              <div className="account-icon youtube">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+                </svg>
+              </div>
+              <div className="account-info">
+                <h3>YouTube</h3>
+                <span className={`status ${connectedAccounts?.youtube_connected ? 'connected' : 'disconnected'}`}>
+                  {connectedAccounts?.youtube_connected ? 'Connected' : 'Not Connected'}
+                </span>
+              </div>
+            </div>
+            {connectedAccounts?.youtube_connected ? (
+              <button
+                onClick={() => disconnectYouTubeMutation.mutate()}
+                className="disconnect-btn"
+                disabled={disconnectYouTubeMutation.isPending}
+              >
+                Disconnect
+              </button>
+            ) : (
+              <button
+                onClick={() => handleConnectPlatform('YouTube')}
+                className="connect-btn"
+              >
+                Connect YouTube
+              </button>
+            )}
           </div>
         </div>
       </div>
