@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import api from '../services/api';
-import ImageEditor from '../components/ImageEditor';
+import ImageEditorModal from '../components/ImageEditorModal';
 import './BucketImages.css';
 
 interface Image {
@@ -45,9 +45,13 @@ export default function BucketImages() {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+<<<<<<< HEAD
   const [editingImageUrl, setEditingImageUrl] = useState<string | null>(null);
   const [editingImageId, setEditingImageId] = useState<number | null>(null);
   const [editingImageName, setEditingImageName] = useState<string>('');
+=======
+  const [editingImage, setEditingImage] = useState<BucketImage | null>(null);
+>>>>>>> ead46fa162eb786111d940b0c04b6f8f22415369
 
   useEffect(() => {
     fetchBucketAndImages();
@@ -164,6 +168,7 @@ export default function BucketImages() {
     setError('');
   };
 
+<<<<<<< HEAD
   const handleEditImage = (bucketImage: BucketImage) => {
     const imageUrl = `http://localhost:3000/${bucketImage.image.file_path}`;
     setEditingImageUrl(imageUrl);
@@ -194,6 +199,23 @@ export default function BucketImages() {
       setEditingImageUrl(null);
       setEditingImageId(null);
       setEditingImageName('');
+=======
+  const handleEdit = (bucketImage: BucketImage) => {
+    setEditingImage(bucketImage);
+  };
+
+  const handleSaveEdit = async (updatedData: any) => {
+    if (!editingImage) return;
+
+    try {
+      await api.patch(
+        `/buckets/${bucketId}/images/${editingImage.id}`,
+        { bucket_image: updatedData }
+      );
+      
+      setSuccess('Image updated successfully!');
+      setEditingImage(null);
+>>>>>>> ead46fa162eb786111d940b0c04b6f8f22415369
       
       // Refresh the images list
       await fetchBucketAndImages();
@@ -201,8 +223,12 @@ export default function BucketImages() {
       // Clear success message after 3 seconds
       setTimeout(() => setSuccess(''), 3000);
     } catch (err: any) {
+<<<<<<< HEAD
       console.error('Error saving edited image:', err);
       throw err; // Let the editor handle the error
+=======
+      throw err; // Let the modal handle the error
+>>>>>>> ead46fa162eb786111d940b0c04b6f8f22415369
     }
   };
 
@@ -309,6 +335,7 @@ export default function BucketImages() {
                   )}
                   <div className="image-actions">
                     <button
+<<<<<<< HEAD
                       onClick={() => handleEditImage(bucketImage)}
                       className="btn-edit"
                     >
@@ -317,16 +344,26 @@ export default function BucketImages() {
                         <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
                       </svg>
                       Edit
+=======
+                      onClick={() => handleEdit(bucketImage)}
+                      className="btn-edit"
+                    >
+                      ✏️ Edit
+>>>>>>> ead46fa162eb786111d940b0c04b6f8f22415369
                     </button>
                     <button
                       onClick={() => handleDelete(bucketImage.id)}
                       className="btn-delete"
                     >
+<<<<<<< HEAD
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                         <polyline points="3 6 5 6 21 6"></polyline>
                         <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
                       </svg>
                       Delete
+=======
+                      🗑️ Delete
+>>>>>>> ead46fa162eb786111d940b0c04b6f8f22415369
                     </button>
                   </div>
                 </div>
@@ -337,6 +374,7 @@ export default function BucketImages() {
       </div>
 
       {/* Image Editor Modal */}
+<<<<<<< HEAD
       {editingImageUrl && (
         <ImageEditor
           imageUrl={editingImageUrl}
@@ -347,6 +385,14 @@ export default function BucketImages() {
             setEditingImageId(null);
             setEditingImageName('');
           }}
+=======
+      {editingImage && (
+        <ImageEditorModal
+          bucketImage={editingImage}
+          bucketId={Number(bucketId)}
+          onClose={() => setEditingImage(null)}
+          onSave={handleSaveEdit}
+>>>>>>> ead46fa162eb786111d940b0c04b6f8f22415369
         />
       )}
     </div>
