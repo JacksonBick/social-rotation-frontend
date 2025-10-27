@@ -35,7 +35,7 @@ interface RssFeed {
 const RssPosts: React.FC = () => {
   const { feedId } = useParams<{ feedId: string }>();
   const navigate = useNavigate();
-  const { user } = useAuthStore();
+  const { user: _user } = useAuthStore();
   const [posts, setPosts] = useState<RssPost[]>([]);
   const [feed, setFeed] = useState<RssFeed | null>(null);
   const [loading, setLoading] = useState(true);

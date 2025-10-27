@@ -1,19 +1,19 @@
 import { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '../services/api';
-import { useAuthStore } from '../store/authStore';
+// import { useAuthStore } from '../store/authStore';
 import './Profile.css';
 
-interface User {
-  id: number;
-  name: string;
-  email: string;
-  timezone: string;
-  watermark_opacity: number;
-  watermark_scale: number;
-  watermark_offset_x: number;
-  watermark_offset_y: number;
-}
+// interface User {
+//   id: number;
+//   name: string;
+//   email: string;
+//   timezone: string;
+//   watermark_opacity: number;
+//   watermark_scale: number;
+//   watermark_offset_x: number;
+//   watermark_offset_y: number;
+// }
 
 interface ConnectedAccounts {
   facebook_connected: boolean;
@@ -27,7 +27,7 @@ interface ConnectedAccounts {
 
 export default function Profile() {
   const queryClient = useQueryClient();
-  const authUser = useAuthStore((state) => state.user);
+  // const _authUser = useAuthStore((state) => state.user);
   
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -228,7 +228,7 @@ export default function Profile() {
     return <div className="loading">Loading profile...</div>;
   }
 
-  const user = userData?.user as User;
+  // const _user = userData?.user as User;
   const connectedAccounts = userData?.connected_accounts as ConnectedAccounts;
 
   return (

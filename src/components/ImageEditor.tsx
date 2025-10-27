@@ -1,6 +1,17 @@
 import { useState, useCallback, useRef } from 'react';
 import Cropper from 'react-easy-crop';
-import { Point, Area } from 'react-easy-crop/types';
+// Define types locally since react-easy-crop/types is not available
+interface Point {
+  x: number;
+  y: number;
+}
+
+interface Area {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}
 import './ImageEditor.css';
 
 interface ImageEditorProps {
@@ -32,7 +43,7 @@ export default function ImageEditor({ imageUrl, imageName, onSave, onClose }: Im
   
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
-  const onCropComplete = useCallback((croppedArea: Area, croppedAreaPixels: Area) => {
+  const onCropComplete = useCallback((_croppedArea: Area, croppedAreaPixels: Area) => {
     setCroppedAreaPixels(croppedAreaPixels);
   }, []);
 

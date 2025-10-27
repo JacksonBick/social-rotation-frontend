@@ -109,7 +109,7 @@ export default function BucketImages() {
       const formData = new FormData();
       formData.append('file', selectedFile);
 
-      const response = await api.post(
+      await api.post(
         `/buckets/${bucketId}/images/upload`,
         formData,
         {
@@ -166,27 +166,6 @@ export default function BucketImages() {
     setEditingImage(bucketImage);
   };
 
-  const handleSaveEdit = async (updatedData: any) => {
-    if (!editingImage) return;
-
-    try {
-      await api.patch(
-        `/buckets/${bucketId}/images/${editingImage.id}`,
-        { bucket_image: updatedData }
-      );
-      
-      setSuccess('Image updated successfully!');
-      setEditingImage(null);
-      
-      // Refresh the images list
-      await fetchBucketAndImages();
-      
-      // Clear success message after 3 seconds
-      setTimeout(() => setSuccess(''), 3000);
-    } catch (err: any) {
-      throw err; // Let the modal handle the error
-    }
-  };
 
   if (loading) {
     return (

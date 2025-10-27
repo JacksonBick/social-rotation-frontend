@@ -38,7 +38,7 @@ const SOCIAL_PLATFORMS = {
   PINTEREST: 32,
 };
 
-export default function ImageEditorModal({ bucketImage, bucketId, onClose, onSave }: ImageEditorModalProps) {
+export default function ImageEditorModal({ bucketImage, bucketId: _bucketId, onClose, onSave }: ImageEditorModalProps) {
   const [friendlyName, setFriendlyName] = useState(bucketImage.friendly_name);
   const [description, setDescription] = useState(bucketImage.description || '');
   const [twitterDescription, setTwitterDescription] = useState(bucketImage.twitter_description || '');
