@@ -1,12 +1,15 @@
 // API service - handles all HTTP requests to Rails backend
-// Base URL: http://localhost:3000/api/v1
+// Base URL: Uses environment variable or defaults to localhost for development
 // Automatically includes authentication token in headers
 import axios from 'axios'
 import { useAuthStore } from '../store/authStore'
 
+// Get API base URL from environment variable or default to localhost
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api/v1'
+
 // Create axios instance with base configuration
 const api = axios.create({
-  baseURL: 'http://localhost:3000/api/v1',
+  baseURL: API_BASE_URL,
   headers: {
     'Content-Type': 'application/json',
   },
