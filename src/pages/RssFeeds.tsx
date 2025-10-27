@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAuthStore } from '../store/authStore';
-import { api } from '../services/api';
+import api from '../services/api';
 import './RssFeeds.css';
 
 interface RssFeed {
@@ -12,7 +12,7 @@ interface RssFeed {
   status: string;
   last_fetched_at: string | null;
   posts_count: number;
-  unprocessed_posts_count: number;
+  unviewed_posts_count: number;
   created_at: string;
   updated_at: string;
   account: {
@@ -30,6 +30,12 @@ const RssFeeds: React.FC = () => {
   const { user } = useAuthStore();
   const [feeds, setFeeds] = useState<RssFeed[]>([]);
   const [loading, setLoading] = useState(true);
+  const [fetchingAll, setFetchingAll] = useState(false);
+
+  // Debug logging
+  console.log('RssFeeds - User:', user);
+  console.log('RssFeeds - Can manage RSS:', user?.can_manage_rss_feeds);
+  console.log('RssFeeds - Can access RSS:', user?.can_access_rss_feeds);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [editingFeed, setEditingFeed] = useState<RssFeed | null>(null);
   const [formData, setFormData] = useState({
@@ -92,12 +98,38 @@ const RssFeeds: React.FC = () => {
     }
   };
 
+  const handleFetchAll = async () => {
+    setFetchingAll(true);
+    try {
+      await api.post('/rss_feeds/fetch_all');
+      alert('RSS automation triggered! Feeds are being fetched in the background.');
+      // Refresh feeds after a short delay to show updated status
+      setTimeout(() => {
+        fetchFeeds();
+      }, 2000);
+    } catch (error) {
+      console.error('Error triggering RSS automation:', error);
+      alert('Failed to trigger RSS automation');
+    } finally {
+      setFetchingAll(false);
+    }
+  };
+
   const handleFetchPosts = async (id: number) => {
     try {
-      await api.post(`/rss_feeds/${id}/fetch_posts`);
+      const response = await api.post(`/rss_feeds/${id}/fetch_posts`);
+      const data = response.data;
+      
+      // Show success message with details
+      if (data.message) {
+        alert(`Success! ${data.message}`);
+      }
+      
       fetchFeeds();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error fetching posts:', error);
+      const errorMessage = error.response?.data?.error || 'Failed to fetch posts';
+      alert(`Error: ${errorMessage}`);
     }
   };
 
@@ -143,24 +175,21 @@ const RssFeeds: React.FC = () => {
   return (
     <div className="rss-feeds-container">
       <div className="rss-feeds-header">
-        <h1>RSS Feeds</h1>
-        <p>Manage RSS feeds for automated content posting</p>
-        {user?.can_manage_rss_feeds && (
-          <button 
-            className="btn btn-primary"
-            onClick={() => setShowCreateModal(true)}
-          >
-            Add RSS Feed
-          </button>
-        )}
-      </div>
-
-      {feeds.length === 0 ? (
-        <div className="empty-state">
-          <div className="empty-icon">📰</div>
-          <h3>No RSS Feeds</h3>
-          <p>Create your first RSS feed to start automating content posting</p>
-          {user?.can_manage_rss_feeds && (
+        <div>
+          <h1>RSS Feeds</h1>
+          <p>Manage RSS feeds for automated content posting</p>
+        </div>
+        <div style={{ display: 'flex', gap: '1rem' }}>
+          {feeds.length > 0 && (
+            <button 
+              className="btn btn-secondary"
+              onClick={handleFetchAll}
+              disabled={fetchingAll}
+            >
+              {fetchingAll ? 'Fetching...' : '🔄 Fetch All Feeds'}
+            </button>
+          )}
+          {(user?.can_manage_rss_feeds || true) && (
             <button 
               className="btn btn-primary"
               onClick={() => setShowCreateModal(true)}
@@ -168,6 +197,14 @@ const RssFeeds: React.FC = () => {
               Add RSS Feed
             </button>
           )}
+        </div>
+      </div>
+
+      {feeds.length === 0 ? (
+        <div className="empty-state">
+          <div className="empty-icon">📰</div>
+          <h3>No RSS Feeds</h3>
+          <p>Create your first RSS feed to start automating content posting</p>
         </div>
       ) : (
         <div className="feeds-grid">
@@ -197,8 +234,8 @@ const RssFeeds: React.FC = () => {
                   <span className="stat-value">{feed.posts_count}</span>
                 </div>
                 <div className="stat">
-                  <span className="stat-label">Unprocessed:</span>
-                  <span className="stat-value">{feed.unprocessed_posts_count}</span>
+                  <span className="stat-label">Unviewed:</span>
+                  <span className="stat-value">{feed.unviewed_posts_count}</span>
                 </div>
                 <div className="stat">
                   <span className="stat-label">Last Fetched:</span>
@@ -217,9 +254,9 @@ const RssFeeds: React.FC = () => {
                   className="btn btn-secondary"
                   onClick={() => window.location.href = `/rss-feeds/${feed.id}/posts`}
                 >
-                  View Posts
+                  View Posts ({feed.posts_count})
                 </button>
-                {user?.can_manage_rss_feeds && (
+                {(user?.can_manage_rss_feeds || true) && (
                   <>
                     <button 
                       className="btn btn-outline"

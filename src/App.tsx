@@ -19,6 +19,7 @@ import Schedule from './pages/Schedule'
 import Profile from './pages/Profile'
 import SubAccounts from './pages/SubAccounts'
 import RssFeeds from './pages/RssFeeds'
+import RssPosts from './pages/RssPosts'
 
 // Protected Route wrapper - redirects to login if not authenticated
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
@@ -53,6 +54,7 @@ function App() {
         <Route path="schedule" element={<Schedule />} />
         <Route path="sub-accounts" element={<SubAccounts />} />
         <Route path="rss-feeds" element={<RssFeeds />} />
+        <Route path="rss-feeds/:feedId/posts" element={<RssPosts />} />
         <Route path="profile" element={<Profile />} />
       </Route>
       

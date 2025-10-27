@@ -116,7 +116,9 @@ export default function ImageEditorModal({ bucketImage, bucketId, onClose, onSav
           {/* Image Preview */}
           <div className="image-preview-section">
             <img
-              src={`http://localhost:3000/${bucketImage.image.file_path}`}
+              src={bucketImage.image.file_path.startsWith('http') 
+                ? bucketImage.image.file_path 
+                : `http://localhost:3000/${bucketImage.image.file_path}`}
               alt={bucketImage.friendly_name}
               className="preview-image"
             />
