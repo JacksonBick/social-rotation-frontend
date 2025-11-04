@@ -13,4 +13,21 @@ export default defineConfig({
       },
     },
   },
+  build: {
+    // Performance optimizations
+    minify: 'esbuild', // Faster than terser
+    sourcemap: false, // Disable sourcemaps in production for smaller bundle
+    rollupOptions: {
+      output: {
+        // Code splitting for better caching
+        manualChunks: {
+          vendor: ['react', 'react-dom', 'react-router-dom'],
+          query: ['@tanstack/react-query'],
+          utils: ['axios', 'zustand'],
+        },
+      },
+    },
+    // Optimize chunk size
+    chunkSizeWarningLimit: 1000,
+  },
 })

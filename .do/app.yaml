@@ -10,6 +10,10 @@ static_sites:
   routes:
   - path: /
   catchall_document: index.html
+  # Performance: Enable CDN caching
+  cors:
+    allow_origins:
+      - "*"
   envs:
   - key: VITE_API_BASE_URL
     value: https://new-social-rotation-backend-qzyk8.ondigitalocean.app/api/v1
