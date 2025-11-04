@@ -4,8 +4,19 @@
 import axios from 'axios'
 import { useAuthStore } from '../store/authStore'
 
-// Get API base URL from environment variable or default to deployed backend
-const API_BASE_URL = (import.meta as any).env?.VITE_API_BASE_URL || 'https://social-rotation-backend.onrender.com/api/v1'
+// Get API base URL from env; if running on localhost, default to local API
+const getApiBaseUrl = () => {
+  const envUrl = (import.meta as any).env?.VITE_API_BASE_URL
+  if (envUrl) return envUrl
+
+  const isLocal = typeof window !== 'undefined' && /^(localhost|127\.0\.0\.1)$/.test(window.location.hostname)
+  if (isLocal) return 'http://localhost:3000/api/v1'
+
+  // Fallback for deployed environments when env var not provided
+  return 'https://new-social-rotation-backend-qzyk8.ondigitalocean.app/api/v1'
+}
+
+const API_BASE_URL = getApiBaseUrl()
 
 // Create axios instance with base configuration
 const api = axios.create({

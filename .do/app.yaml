@@ -1,0 +1,14 @@
+name: social-rotation-frontend
+static_sites:
+- name: frontend
+  source_dir: /
+  github:
+    repo: BOSS_GITHUB_USERNAME/social-rotation-frontend
+    branch: main
+  build_command: npm run build
+  output_dir: dist
+  routes:
+  - path: /
+  envs:
+  - key: VITE_API_BASE_URL
+    value: https://new-social-rotation-backend-qzyk8.ondigitalocean.app/api/v1
