@@ -47,6 +47,24 @@ export default function BucketImages() {
   const [success, setSuccess] = useState('');
   const [editingImage, setEditingImage] = useState<BucketImage | null>(null);
 
+  const getImageUrl = (image: Image) => {
+    if (image?.source_url) {
+      return image.source_url;
+    }
+
+    if (image?.file_path?.startsWith('http')) {
+      return image.file_path;
+    }
+
+    const assetHost =
+      import.meta.env.VITE_ASSET_BASE_URL ||
+      import.meta.env.VITE_API_BASE_URL?.replace(/\/api\/v1$/, '') ||
+      window.location.origin;
+
+    const normalizedPath = image?.file_path?.replace(/^\/+/, '') || '';
+    return `${assetHost.replace(/\/+$/, '')}/${normalizedPath}`;
+  };
+
   useEffect(() => {
     fetchBucketAndImages();
   }, [bucketId]);
@@ -220,7 +238,7 @@ export default function BucketImages() {
             </div>
           ) : (
             <div className="upload-preview">
-              <img src={previewUrl || ''} alt="Preview" className="preview-image" />
+              {previewUrl && <img src={previewUrl} alt="Preview" className="preview-image" />}
               <div className="upload-actions">
                 <p className="file-name">{selectedFile.name}</p>
                 <div className="button-group">
@@ -258,9 +276,7 @@ export default function BucketImages() {
               <div key={bucketImage.id} className="image-card">
                 <div className="image-wrapper">
                   <img
-                    src={bucketImage.image.file_path.startsWith('http') 
-                      ? bucketImage.image.file_path 
-                      : `http://localhost:3000/${bucketImage.image.file_path}`}
+                    src={getImageUrl(bucketImage.image)}
                     alt={bucketImage.friendly_name}
                     className="image-thumbnail"
                   />
@@ -302,9 +318,7 @@ export default function BucketImages() {
       {/* Image Editor Modal */}
       {editingImage && (
         <ImageEditor
-          imageUrl={editingImage.image.file_path.startsWith('http') 
-            ? editingImage.image.file_path 
-            : `http://localhost:3000/${editingImage.image.file_path}`}
+          imageUrl={getImageUrl(editingImage.image)}
           imageName={editingImage.friendly_name}
           onClose={() => setEditingImage(null)}
           onSave={async (editedBlob) => {
