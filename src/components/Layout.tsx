@@ -77,18 +77,17 @@ function Layout() {
             </svg>
             Profile
           </Link>
-          <Link to="/legal" className="nav-link">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M9 7h6"/>
-              <path d="M4 21h16"/>
-              <path d="M6 21v-8h12v8"/>
-              <path d="M9 11V5a3 3 0 1 1 6 0v6"/>
-            </svg>
-            Legal
-          </Link>
         </nav>
         
         <div className="sidebar-footer">
+          <div className="legal-links">
+            <Link to="/terms-of-service" className="legal-link">
+              Terms of Service
+            </Link>
+            <Link to="/privacy-policy" className="legal-link">
+              Privacy Policy
+            </Link>
+          </div>
           {originalUser && (
             <button onClick={handleSwitchBack} className="switch-back-btn">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
