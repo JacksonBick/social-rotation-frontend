@@ -19,6 +19,13 @@
   line-height: 1.6;
 }
 
+.legal-updated,
+.legal-effective {
+  margin-top: 0.35rem;
+  font-size: 0.9rem;
+  color: #64748b;
+}
+
 .legal-section {
   margin-top: 2rem;
 }
@@ -29,6 +36,13 @@
   color: #1e293b;
 }
 
+.legal-section h3 {
+  margin-top: 1.25rem;
+  margin-bottom: 0.5rem;
+  font-size: 1.05rem;
+  color: #1f2937;
+}
+
 .legal-placeholder {
   margin: 0;
   color: #64748b;
@@ -37,6 +51,30 @@
   border-radius: 8px;
   padding: 1.25rem;
   border: 1px solid #e2e8f0;
+}
+
+.legal-section p,
+.legal-section ul {
+  color: #475569;
+  line-height: 1.7;
+}
+
+.legal-section ul {
+  padding-left: 1.25rem;
+  margin: 0.5rem 0 1rem;
+}
+
+.legal-section li {
+  margin-bottom: 0.35rem;
+}
+
+.legal-section a {
+  color: #2563eb;
+  text-decoration: none;
+}
+
+.legal-section a:hover {
+  text-decoration: underline;
 }
 
 @media (max-width: 768px) {
