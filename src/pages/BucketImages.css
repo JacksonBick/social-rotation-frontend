@@ -270,13 +270,10 @@
   cursor: pointer;
   transition: all 0.2s;
   font-weight: 500;
-<<<<<<< HEAD
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 0.4rem;
-=======
->>>>>>> ead46fa162eb786111d940b0c04b6f8f22415369
 }
 
 .btn-edit {
