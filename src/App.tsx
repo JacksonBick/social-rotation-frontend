@@ -20,6 +20,7 @@ import Profile from './pages/Profile'
 import SubAccounts from './pages/SubAccounts'
 import RssFeeds from './pages/RssFeeds'
 import RssPosts from './pages/RssPosts'
+import Legal from './pages/Legal'
 
 // Protected Route wrapper - redirects to login if not authenticated
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
@@ -56,6 +57,7 @@ function App() {
         <Route path="rss-feeds" element={<RssFeeds />} />
         <Route path="rss-feeds/:feedId/posts" element={<RssPosts />} />
         <Route path="profile" element={<Profile />} />
+        <Route path="legal" element={<Legal />} />
       </Route>
       
       {/* Catch all - redirect to dashboard */}
