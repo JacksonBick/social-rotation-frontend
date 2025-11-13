@@ -134,7 +134,7 @@ const RssPosts: React.FC = () => {
         if (post && post.has_image) {
           // Create image record
           const imageResponse = await api.post('/images', {
-            file_path: post.image_url,
+            file_path: post.display_image_url || post.image_url,
             friendly_name: post.short_title || post.title.substring(0, 30)
           });
           
@@ -183,7 +183,7 @@ const RssPosts: React.FC = () => {
         if (post && post.has_image) {
           // Create image record
           const imageResponse = await api.post('/images', {
-            file_path: post.image_url,
+            file_path: post.display_image_url || post.image_url,
             friendly_name: post.short_title || post.title.substring(0, 30)
           });
           
