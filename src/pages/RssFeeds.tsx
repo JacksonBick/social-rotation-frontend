@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../store/authStore';
 import api from '../services/api';
 import './RssFeeds.css';
@@ -28,14 +29,12 @@ interface RssFeed {
 
 const RssFeeds: React.FC = () => {
   const { user } = useAuthStore();
+  const navigate = useNavigate();
   const [feeds, setFeeds] = useState<RssFeed[]>([]);
   const [loading, setLoading] = useState(true);
   const [fetchingAll, setFetchingAll] = useState(false);
 
   // Debug logging
-  console.log('RssFeeds - User:', user);
-  console.log('RssFeeds - Can manage RSS:', user?.can_manage_rss_feeds);
-  console.log('RssFeeds - Can access RSS:', user?.can_access_rss_feeds);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [editingFeed, setEditingFeed] = useState<RssFeed | null>(null);
   const [formData, setFormData] = useState({
@@ -252,7 +251,7 @@ const RssFeeds: React.FC = () => {
                 </button>
                 <button 
                   className="btn btn-secondary"
-                  onClick={() => window.location.href = `/rss-feeds/${feed.id}/posts`}
+                  onClick={() => navigate(`/rss-feeds/${feed.id}/posts`)}
                 >
                   View Posts ({feed.posts_count})
                 </button>
