@@ -203,7 +203,7 @@ const RssPosts: React.FC = () => {
       const viewBucket = confirm(`✅ Created bucket "${newBucketName}" with ${selectedPosts.length} posts!\n\nWould you like to view the bucket?`);
       
       if (viewBucket) {
-        window.location.href = `/buckets/${bucketId}/images`;
+        navigate(`/buckets/${bucketId}/images`);
       }
       
       setShowBucketModal(false);
